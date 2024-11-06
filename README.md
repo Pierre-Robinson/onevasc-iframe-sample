@@ -25,6 +25,7 @@ In order to receive messages from the Onevasc API, you need to implement a javas
     async function listener(e) {
         let msg = JSON.parse(e.data);
 
+        // Ignore this message as it is not coming from the Onevasc API
         if(!msg.onevasc)
             return;
 
