@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+  <head>
+    <title>OneVasc</title>
+
+    <script
+  src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+  crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+
+      document.addEventListener("DOMContentLoaded", function(){
+        const queryString = window.location.search;
+        console.log("Query string", queryString);
+
+        const urlParams = new URLSearchParams(queryString);
+        const iframe_url = urlParams.get('iframe_url')
+        
+        if(iframe_url != undefined && iframe_url != "") {
+          console.log("iframe url parameter", iframe_url);
+          document.getElementById("onevasc").src = iframe_url;
+        }
+      });
+
+        
+        addEventListener("message", listener, false);
+        async function listener(e) {
+          try {
+            let msg = JSON.parse(e.data);
+
+            if(!msg.onevasc)
+              return;
+
+            //alert("message received (origin="+e.origin+"): "+JSON.stringify(msg));
+            console.log("iframe message received", msg);
+            $('#state')[0].innerText = e.data;
+
+            if( msg.command == "onevError") {
+              alert ("error")
+              console.error("onev iframe error", msg);
+            }
+            else if( msg.command == "savePdf" )
+            {
+              var link = document.createElement("a");
+
+              document.body.appendChild(link); // for Firefox
+
+              link.setAttribute("href", msg.data);
+              link.setAttribute("download", "document.pdf");
+              link.click();
+              await new Promise((resolve) => setTimeout(resolve, 5250));
+            }
+            else if( msg.command == "saveJpeg" )
+            {
+              var link = document.createElement("a");
+
+              document.body.appendChild(link); // for Firefox
+
+              link.setAttribute("href", msg.data);
+              link.setAttribute("download", "image.jpeg");
+              link.click();
+              await new Promise((resolve) => setTimeout(resolve, 5250));
+            }
+            else if( msg.command == "savePng" )
+            {
+              var link = document.createElement("a");
+
+              document.body.appendChild(link); // for Firefox
+
+              link.setAttribute("href", msg.data);
+              link.setAttribute("download", "image.png");
+              link.click();
+              await new Promise((resolve) => setTimeout(resolve, 5250));
+            }
+
+            else if(msg.command == "onevLoginRequest") {
+              let username = prompt("Please enter your login", "");
+              let pwd = prompt("Please enter your password", "");
+
+              sendOnevascMessage( "onevLoginWithCredentials", {
+                username: username,
+                password: pwd
+              });
+            }
+
+            else if( msg.command == "getInjuries") {
+              console.log("getInjuries response", msg.data);
+            }
+            else if( msg.command == "onevReady") {
+              $('#onevasc')[0].setAttribute('style', 'display:inherit');
+              sendOnevascMessage( "setStents", [
+                {
+                  name: "iframe test 1",
+                  diameter: 5,
+                  length: 123
+                },
+                {
+                  name: "iframe test 2",
+                  diameter: 7,
+                  length: 124
+                },
+                {
+                  name: "iframe test 3",
+                  diameter: 7
+                },
+                {
+                  name: "iframe test 4",
+                  length: 42
+                }
+              ]);
+            }
+          }
+          catch(e)
+          {}
+        }
+        
+        function sendOnevascMessage(cmd, data = "") {
+            $('#onevasc')[0].contentWindow.postMessage(JSON.stringify({ onevasc: true, command: cmd, data: data }), '*')
+        }
+    </script>
+
+  </head>
+  <body>
+      <iframe style="display:none" id="onevasc" src="https://vasc-map.firebaseapp.com/loadexam/3sVdt07gOhaKKJZzKV6A" height="1000" width="100%" title="Onevasc"></iframe>
+      <p>Onev content :</p>
+      <textarea id="onevcontent">
+      </textarea>
+      <p>Create object :</p>
+      <textarea id="newobj">
+      </textarea>
+      <button id="newObj" onClick="sendOnevascMessage('createObject', JSON.parse($('#newobj')[0].value));">Send object</button>
+      <button id="logoutBtn" onClick="sendOnevascMessage('logout');">Logout</button>
+      <button id="getStateBtn" onClick="sendOnevascMessage('saveOnev');">Get ONEV</button>
+      <button id="loadStateBtn" onClick="sendOnevascMessage('loadOnev', $('#onevcontent')[0].value);">Set ONEV</button>
+      <input id="imageQuality" value="2"/>
+      <button id="getPngBtn" onClick="sendOnevascMessage('savePng', {quality:Number($('#imageQuality')[0].value)});">Get PNG data</button>
+      <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value)});">Get JPEG data</button>
+      <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value), mode: 'schema-only'});">Get JPEG schema-only</button>
+      <button id="getPdfBtn" onClick="sendOnevascMessage('savePdf');">Get PDF data</button>
+      <button id="getInjuriesBtn" onClick="sendOnevascMessage('getInjuries');">Get Injuries</button>
+      <button id="message array" onClick="sendOnevascMessage('messageArray');">Message array with no message (error)</button>
+      <button id="message array" onClick="sendOnevascMessage('messageArray', [{ command: 'saveOnev'}, { command: 'saveJpeg'}]);">Message array</button>
+      <p id="state"></p>
+</html>
