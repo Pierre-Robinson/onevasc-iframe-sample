@@ -10,7 +10,7 @@ The API uses the javascript native postMessage function. In order to communicate
 
 First of all you need to create an iframe to embed Onevasc
 
-```
+```html
     <iframe style="display:none" id="onevasc" src="https://vasc-map.firebaseapp.com" height="1000" width="100%" title="Onevasc"></iframe>
 ```
 
@@ -20,7 +20,7 @@ While this is a basic example, you may configure its sizing to serve your needs.
 
 In order to receive messages from the Onevasc API, you need to implement a javascript listener for the *message* event
 
-```
+```javascript
     addEventListener("message", listener, false);
     async function listener(e) {
         let msg = JSON.parse(e.data);
@@ -48,7 +48,7 @@ Once you are able to receive Onevasc messages, you may implement some code in or
 
 When login is required, Onevasc sends a specific message : **IFRAME_CMD_LOGIN_REQUEST** (string value "onevLoginRequest"). The login credentials are expected in response to this message.
 
-```
+```javascript
     async function listener(e) {
         let msg = JSON.parse(e.data);
 
@@ -58,8 +58,8 @@ When login is required, Onevasc sends a specific message : **IFRAME_CMD_LOGIN_RE
         var email = "user@example.com";
         var pwd = "NotVerySecure";
 
+        // When receiving a login request, we are expected to send back the credentials
         if(msg.command == IFRAME_CMD_LOGIN_REQUEST) {
-            // When receiving a login request, we are expected to send back the credentials
             sendOnevascMessage(IFRAME_CMD_LOGIN_WITH_CREDENTIALS, {
                 username: email,
                 password: pwd
@@ -67,8 +67,10 @@ When login is required, Onevasc sends a specific message : **IFRAME_CMD_LOGIN_RE
         }
 
     function sendOnevascMessage(cmd, data = "") {
+        var msgToSend = new iframe_message(cmd, data);
+
         // In our example, the Onevasc iframe uses the *onevasc* id. So sending a message is as simple as the following line :
-        $('#onevasc')[0].contentWindow.postMessage(JSON.stringify({ onevasc: true, command: cmd, data: data }), '*')
+        $('#onevasc')[0].contentWindow.postMessage(JSON.stringify(msgToSend), '*')
     }
 
 ```
