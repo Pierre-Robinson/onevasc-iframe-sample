@@ -28,6 +28,13 @@ In order to receive messages from the Onevasc API, you need to implement a javas
         if(!msg.onevasc)
             return;
 
+        if(msg.error) {
+            alert("An error occurred, check the console");
+            console.error(msg);
+            return;
+        }
+
+
         // Handle the message here
     }
 ```
@@ -58,7 +65,7 @@ When login is required, Onevasc sends a specific message : **IFRAME_CMD_LOGIN_RE
         var email = "user@example.com";
         var pwd = "NotVerySecure";
 
-        // When receiving a login request, we are expected to send back the credentials
+        // When receiving a login request, we are expected to send the credentials back
         if(msg.command == IFRAME_CMD_LOGIN_REQUEST) {
             sendOnevascMessage(IFRAME_CMD_LOGIN_WITH_CREDENTIALS, {
                 username: email,
