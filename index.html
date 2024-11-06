@@ -27,13 +27,17 @@
         addEventListener("message", listener, false);
         async function listener(e) {
           try {
+            // The event object should contain a stringified iframe_message object
             let msg = JSON.parse(e.data);
 
+            // Exit the callback if the message is not coming from the Onevasc API
             if(!msg.onevasc)
               return;
 
             //alert("message received (origin="+e.origin+"): "+JSON.stringify(msg));
             console.log("iframe message received", msg);
+
+            // Display all received messages in this element
             $('#state')[0].innerText = e.data;
 
             if( msg.command == "onevError") {
@@ -88,7 +92,10 @@
               console.log("getInjuries response", msg.data);
             }
             else if( msg.command == "onevReady") {
+              // When ready is received, show the iframe
               $('#onevasc')[0].setAttribute('style', 'display:inherit');
+
+              // Example of stent information
               sendOnevascMessage( "setStents", [
                 {
                   name: "iframe test 1",

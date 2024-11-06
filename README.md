@@ -11,7 +11,7 @@ The API uses the javascript native postMessage function. In order to communicate
 First of all you need to create an iframe to embed Onevasc
 
 ```html
-    <iframe style="display:none" id="onevasc" src="http://localhost:8080" height="1000" width="100%" title="Onevasc"></iframe>
+    <iframe id="onevasc" src="http://localhost:8080" height="1000" width="100%" title="Onevasc"></iframe>
 ```
 
 While this is a basic example, you may configure its sizing to serve your needs. But keep in mind that Onevasc still needs some room to be practically usable.
