@@ -1,7 +1,7 @@
 // Not used
 export const IFRAME_CMD_NONE = "none";
 export const IFRAME_CMD_LOGOUT = "logout";
-// Message sent when Onevasc is ready to receive/send messages
+// Message sent when OneVasc is ready to receive/send messages
 export const IFRAME_CMD_READY = "onevReady";
 // Message sent when an error is encountered. Usually, the original message is available under the data field,
 // while the error field should contain information about the error

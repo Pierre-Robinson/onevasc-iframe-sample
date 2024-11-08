@@ -30,7 +30,7 @@
             // The event object should contain a stringified iframe_message object
             let msg = JSON.parse(e.data);
 
-            // Exit the callback if the message is not coming from the Onevasc API
+            // Exit the callback if the message is not coming from the OneVasc API
             if(!msg.onevasc)
               return;
 
