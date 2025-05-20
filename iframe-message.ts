@@ -33,12 +33,14 @@ export const IFRAME_CMD_MESSAGE_ARRAY = "messageArray";
 export const IFRAME_CMD_GET_INJURIES = "getInjuries";
 // When this message is received, the same message is sent back containing a listing of all injuries data & texts informations
 export const IFRAME_CMD_CREATE_OBJECT = "createObject";
+// When the "saving context" changes, this message is emitted
+export const IFRAME_CMD_SAVE_CONTEXT_CHANGE = "saveContextChange";
 
 export type CommandType = typeof IFRAME_CMD_NONE | typeof IFRAME_CMD_NEW_EXAM | typeof IFRAME_CMD_LOGOUT | typeof IFRAME_CMD_READY | typeof IFRAME_CMD_ERROR |
 typeof IFRAME_CMD_LOGIN_REQUEST | typeof IFRAME_CMD_LOGIN_WITH_CREDENTIALS | typeof IFRAME_CMD_LOGIN_RESPONSE |
 typeof IFRAME_CMD_LOAD_ONEV | typeof IFRAME_CMD_SAVE_ONEV |
 typeof IFRAME_CMD_SAVE_PDF | typeof IFRAME_CMD_SAVE_PNG | typeof IFRAME_CMD_SAVE_JPEG | typeof IFRAME_CMD_SET_STENTS |
-typeof IFRAME_CMD_MESSAGE_ARRAY | typeof IFRAME_CMD_GET_INJURIES | typeof IFRAME_CMD_CREATE_OBJECT;
+typeof IFRAME_CMD_MESSAGE_ARRAY | typeof IFRAME_CMD_GET_INJURIES | typeof IFRAME_CMD_CREATE_OBJECT | typeof IFRAME_CMD_SAVE_CONTEXT_CHANGE;
 
 export type Callback = (obj: any) => void;
 

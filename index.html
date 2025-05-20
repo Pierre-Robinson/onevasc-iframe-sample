@@ -59,6 +59,18 @@
               alert ("error")
               console.error("onev iframe error", msg);
             }
+            // Handling the save button, visible or not, disabled or not
+            else if(msg.command == "saveContextChange") {
+              if(msg.data.schemaVisible)
+                $('#saveStateBtn')[0].classList.remove("d-none");
+              else
+                $('#saveStateBtn')[0].classList.add("d-none");
+
+              if(msg.data.unsavedChanges)
+                $('#saveStateBtn')[0].removeAttribute("disabled");
+              else
+                $('#saveStateBtn')[0].setAttribute("disabled", true);
+            }
             else if( msg.command == "savePdf" )
             {
               var link = document.createElement("a");
