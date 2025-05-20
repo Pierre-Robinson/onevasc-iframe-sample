@@ -1,6 +1,12 @@
 <!doctype html>
 <html>
   <head>
+    <!-- bootstrap css & js-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
     <title>OneVasc</title>
 
     <script
@@ -23,6 +29,15 @@
         }
       });
 
+      function getQueryVariable(name) {
+        var qs = window.location.search.substring(1);
+        var v = qs.split('&');
+        for (var i=0;i<v.length;i++) {
+          var p = v[i].split('=');
+          if (p['0'] == name) { return p['1']; }
+        }
+        return null;
+      }
         
         addEventListener("message", listener, false);
         async function listener(e) {
@@ -79,8 +94,8 @@
             }
 
             else if(msg.command == "onevLoginRequest") {
-              let username = prompt("Please enter your login", "");
-              let pwd = prompt("Please enter your password", "");
+              let username = getQueryVariable("username") ?? prompt("Please enter your login", "");
+              let pwd = getQueryVariable("password") ?? prompt("Please enter your password", "");
 
               sendOnevascMessage( "onevLoginWithCredentials", {
                 username: username,
@@ -129,24 +144,32 @@
 
   </head>
   <body>
-      <iframe style="display:none" id="onevasc" src="https://vasc-map.firebaseapp.com/loadexam/3sVdt07gOhaKKJZzKV6A" height="1000" width="100%" title="Onevasc"></iframe>
-      <p>Onev content :</p>
-      <textarea id="onevcontent">
-      </textarea>
-      <p>Create object :</p>
-      <textarea id="newobj">
-      </textarea>
-      <button id="newObj" onClick="sendOnevascMessage('createObject', JSON.parse($('#newobj')[0].value));">Send object</button>
-      <button id="logoutBtn" onClick="sendOnevascMessage('logout');">Logout</button>
-      <button id="getStateBtn" onClick="sendOnevascMessage('saveOnev');">Get ONEV</button>
-      <button id="loadStateBtn" onClick="sendOnevascMessage('loadOnev', $('#onevcontent')[0].value);">Set ONEV</button>
-      <input id="imageQuality" value="2"/>
-      <button id="getPngBtn" onClick="sendOnevascMessage('savePng', {quality:Number($('#imageQuality')[0].value)});">Get PNG data</button>
-      <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value)});">Get JPEG data</button>
-      <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value), mode: 'schema-only'});">Get JPEG schema-only</button>
-      <button id="getPdfBtn" onClick="sendOnevascMessage('savePdf');">Get PDF data</button>
-      <button id="getInjuriesBtn" onClick="sendOnevascMessage('getInjuries');">Get Injuries</button>
-      <button id="message array" onClick="sendOnevascMessage('messageArray');">Message array with no message (error)</button>
-      <button id="message array" onClick="sendOnevascMessage('messageArray', [{ command: 'saveOnev'}, { command: 'saveJpeg'}]);">Message array</button>
-      <p id="state"></p>
+
+    <div class="container-fluid"></div>
+      <div class="row">
+        <div class="col col-10 order-9">
+          <iframe style="display:none" id="onevasc" src="https://vasc-map.firebaseapp.com/loadexam/3sVdt07gOhaKKJZzKV6A" height="1000" width="100%" title="Onevasc"></iframe>
+        </div>
+        <div class="col col-2">
+          <p>Onev content :</p>
+          <textarea id="onevcontent">
+          </textarea>
+          <p>Create object :</p>
+          <textarea id="newobj">
+          </textarea>
+          <button id="newObj" onClick="sendOnevascMessage('createObject', JSON.parse($('#newobj')[0].value));">Send object</button>
+          <button id="logoutBtn" onClick="sendOnevascMessage('logout');">Logout</button>
+          <button id="saveStateBtn" class="d-none" onClick="sendOnevascMessage('saveOnev');">Save ONEV</button>
+          <button id="loadStateBtn" onClick="sendOnevascMessage('loadOnev', $('#onevcontent')[0].value);">Load ONEV</button>
+          <input id="imageQuality" value="2"/>
+          <button id="getPngBtn" onClick="sendOnevascMessage('savePng', {quality:Number($('#imageQuality')[0].value)});">Get PNG data</button>
+          <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value)});">Get JPEG data</button>
+          <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value), mode: 'schema-only'});">Get JPEG schema-only</button>
+          <button id="getPdfBtn" onClick="sendOnevascMessage('savePdf');">Get PDF data</button>
+          <button id="getInjuriesBtn" onClick="sendOnevascMessage('getInjuries');">Get Injuries</button>
+          <button id="message array" onClick="sendOnevascMessage('messageArray');">Message array with no message (error)</button>
+          <button id="message array" onClick="sendOnevascMessage('messageArray', [{ command: 'saveOnev'}, { command: 'saveJpeg'}]);">Message array</button>
+          <p id="state"></p>
+        </div>
+      </div>
 </html>
