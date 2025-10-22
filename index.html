@@ -15,17 +15,28 @@
   crossorigin="anonymous"></script>
 
     <script type="text/javascript">
-
       document.addEventListener("DOMContentLoaded", function(){
         const queryString = window.location.search;
         console.log("Query string", queryString);
 
         const urlParams = new URLSearchParams(queryString);
-        const iframe_url = urlParams.get('iframe_url')
+        const iframe_url = urlParams.get('iframe_url');
         
         if(iframe_url != undefined && iframe_url != "") {
           console.log("iframe url parameter", iframe_url);
           document.getElementById("onevasc").src = iframe_url;
+        }
+
+        const inputElement = document.getElementById("loadState");
+        inputElement.addEventListener("change", loadOnevFile, false);
+        function loadOnevFile() {
+          const file = this.files[0];
+
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            sendOnevascMessage("loadOnev", e.target.result);
+          };
+          reader.readAsText(file);
         }
       });
 
@@ -56,7 +67,7 @@
             $('#state')[0].innerText = e.data;
 
             if( msg.command == "onevError") {
-              alert ("error")
+              alert("Received onevasc error message")
               console.error("onev iframe error", msg);
             }
             // Handling the save button, visible or not, disabled or not
@@ -70,6 +81,9 @@
                 $('#saveStateBtn')[0].removeAttribute("disabled");
               else
                 $('#saveStateBtn')[0].setAttribute("disabled", true);
+            }
+            else if(msg.command == "generateAIText") {
+              $('#state')[0].innerText = msg.data.text;
             }
             else if( msg.command == "savePdf" )
             {
@@ -152,6 +166,10 @@
         function sendOnevascMessage(cmd, data = "") {
             $('#onevasc')[0].contentWindow.postMessage(JSON.stringify({ onevasc: true, command: cmd, data: data }), '*')
         }
+
+        function sendOnevascSavePdfMessage() {
+            $('#onevasc')[0].contentWindow.postMessage(JSON.stringify({ onevasc: true, command: 'savePdf' }), '*')
+        }
     </script>
 
   </head>
@@ -173,14 +191,19 @@
           <button id="logoutBtn" onClick="sendOnevascMessage('logout');">Logout</button>
           <button id="saveStateBtn" class="d-none" onClick="sendOnevascMessage('saveOnev');">Save ONEV</button>
           <button id="loadStateBtn" onClick="sendOnevascMessage('loadOnev', $('#onevcontent')[0].value);">Load ONEV</button>
+          <input type="file" id="loadState" name="loadonev" accept=".onev" />
           <input id="imageQuality" value="2"/>
           <button id="getPngBtn" onClick="sendOnevascMessage('savePng', {quality:Number($('#imageQuality')[0].value)});">Get PNG data</button>
           <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value)});">Get JPEG data</button>
           <button id="getJPegBtn" onClick="sendOnevascMessage('saveJpeg', {quality:Number($('#imageQuality')[0].value), mode: 'schema-only'});">Get JPEG schema-only</button>
-          <button id="getPdfBtn" onClick="sendOnevascMessage('savePdf');">Get PDF data</button>
+          <button id="getPdfBtn" onClick="sendOnevascSavePdfMessage();">Get PDF data</button>
           <button id="getInjuriesBtn" onClick="sendOnevascMessage('getInjuries');">Get Injuries</button>
           <button id="message array" onClick="sendOnevascMessage('messageArray');">Message array with no message (error)</button>
           <button id="message array" onClick="sendOnevascMessage('messageArray', [{ command: 'saveOnev'}, { command: 'saveJpeg'}]);">Message array</button>
+          <button id="generateAIText" onClick="sendOnevascMessage('generateAIText');">AI Text (default opts)</button>
+          <button id="generateAIText" onClick="sendOnevascMessage('generateAIText', {options: {mode: 'ConclusionOnly'}});">AI Text (conclusion only)</button>
+          <button id="generateAIText" onClick="sendOnevascMessage('generateAIText', {options: {aiModel: 'gemini-2.5-pro'}});">AI Text (pro model)</button>
+          <button id="generateAIText" onClick="sendOnevascMessage('generateAIText', {options: {aiModel: 'gemini-NOEXIST-pro'}});">AI Text (invalid model, error)</button>
           <p id="state"></p>
         </div>
       </div>
